@@ -11,9 +11,9 @@ function DisplayChatMsg() {
     async function getAllMsgs() {
         const url = "api/room/" + roomId;
         const response = await fetch(url);
-        let msg = await response.json();
-        console.log(msg);
+        //console.debug(msg);
         if (response.ok) {
+            const msg = await response.json();
             setMsgList(msg);
             setError("");
         } else {
@@ -52,7 +52,7 @@ function DisplayChatMsg() {
     // call api once to fetch all existing msgs in this chat room at the beginning
     useEffect(() => {
         getAllMsgs();
-        // call the api to fetch all chat msgs every X seconds
+        // //call the api to fetch all chat msgs every X seconds
         // const intervalId = setInterval(getAllMsgs, 3000);
         // return () => {
         //     clearInterval(intervalId);

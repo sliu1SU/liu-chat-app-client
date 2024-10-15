@@ -18,7 +18,7 @@ function DisplayRoomList() {
         if (response.ok) {
             setRooms(await response.json());
         } else {
-            await getAllRooms();
+            setError(await response.text());
         }
     }
 
@@ -49,11 +49,11 @@ function DisplayRoomList() {
     // to fetch all rooms in the database
     useEffect(() => {
         getAllRooms()
-        // call the api to fetch all chat rooms every X seconds
-        const intervalId = setInterval(getAllRooms, 3000);
-        return () => {
-            clearInterval(intervalId);
-        }
+        // // call the api to fetch all chat rooms every X seconds
+        // const intervalId = setInterval(getAllRooms, 3000);
+        // return () => {
+        //     clearInterval(intervalId);
+        // }
     }, []);
 
     return (
