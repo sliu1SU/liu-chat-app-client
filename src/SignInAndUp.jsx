@@ -1,15 +1,17 @@
 import {useContext, useEffect, useState} from "react";
 import {UserContext} from "./UserContext.jsx";
+import {useNavigate} from "react-router-dom";
 
 function SignInAndUp() {
     const {setUser} = useContext(UserContext);  // Access user and setUser
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errMsg, setErrMsg] = useState("");
+    const navigate = useNavigate();  // Get navigate function from useNavigate
 
     // fn to log in
     async function logInFn() {
-        const url = "api/login/";
+        const url = "/api/login/";
         // create js object
         const body = {
             email: email,
@@ -27,6 +29,7 @@ function SignInAndUp() {
             const resBody =  await response.json();
             setErrMsg("");
             setUser(resBody);
+            navigate('/rooms');
         } else {
             setErrMsg("Error: 400 - log in failed!");
         }
@@ -34,7 +37,7 @@ function SignInAndUp() {
 
     // fn to sign up
     async function signUpFn() {
-        const url = "api/signup/";
+        const url = "/api/signup/";
         // create js object
         const body = {
             email: email,
@@ -52,6 +55,7 @@ function SignInAndUp() {
             const resBody =  await response.json();
             setErrMsg("");
             setUser(resBody);
+            navigate('/rooms');
         } else {
             setErrMsg("Error: 400 - log in failed!");
         }

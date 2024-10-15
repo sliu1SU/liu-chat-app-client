@@ -1,29 +1,45 @@
 import {useContext, useEffect, useState} from "react";
 import {UserContext} from "./UserContext.jsx";
+import {ChatRoomsContext} from "./ChatRoomsContext.jsx";
+import {Link, useNavigate} from "react-router-dom";
 
 // component to display all chat rooms
 function DisplayRoomList() {
-    const {setRoomName, setRoomId, setShowAllRooms} = useContext(UserContext);
+    const {setUser} = useContext(UserContext);
+    const {setRoomsHashTable} = useContext(ChatRoomsContext);
     const [rooms, setRooms] = useState([]);
     const [error, setError] = useState("");
     const [inputName, setInputName] = useState("");
     const [inputDes, setInputDes] = useState("");
+    const navigate = useNavigate();  // Get navigate function from useNavigate
     // some local vars to display static texts
     const titleName = 'room name: ';
     const titleDesc = 'room description: ';
 
     async function getAllRooms() {
-        const url = "api/rooms/";
+        const url = "/api/rooms/";
         const response = await fetch(url);
         if (response.ok) {
-            setRooms(await response.json());
+            const arr = await response.json();
+            setRooms(arr);
+            // update the hashtable
+            let table = new Map();
+            for (let i = 0; i < arr.length; i++) {
+                table.set(arr[i].id, [arr[i].name, arr[i].description]);
+            }
+            setRoomsHashTable(table);
         } else {
+            if (response.status === 401) {
+                // cookie expired, redirect back to the signin/up page
+                setUser(null);
+                navigate('/');
+            }
             setError(await response.text());
         }
     }
 
     async function createOneRoom() {
-        const url = 'api/rooms/';
+        const url = '/api/rooms/';
         const data = {
             method: 'POST',
             headers: {
@@ -41,6 +57,10 @@ function DisplayRoomList() {
             // react will rerender this portion
             await getAllRooms();
         } else {
+            if (response.status === 401) {
+                setUser(null);
+                navigate('/');
+            }
             setError("ERROR: professor screwed up! please try again.");
         }
     }
@@ -48,7 +68,7 @@ function DisplayRoomList() {
     // useEffect to exe once when this component is called
     // to fetch all rooms in the database
     useEffect(() => {
-        getAllRooms()
+        getAllRooms();
         // // call the api to fetch all chat rooms every X seconds
         // const intervalId = setInterval(getAllRooms, 3000);
         // return () => {
@@ -63,13 +83,7 @@ function DisplayRoomList() {
                     {
                         rooms.map(room => (
                             <li key={room.id}>
-                                <a onClick={() => {
-                                    // this will update the roomName state in app(), so that
-                                    // app() will render a single chat room
-                                    setRoomName(room.name);
-                                    setRoomId(room.id);
-                                    setShowAllRooms(false);
-                                }}>{room.id} - {room.name} - {room.description}</a>
+                                <Link to={`/rooms/${room.id}`}>{room.id} - {room.name} - {room.description}</Link>
                             </li>
                         ))
                     }

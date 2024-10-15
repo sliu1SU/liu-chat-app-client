@@ -1,29 +1,37 @@
 import {useContext, useEffect, useState} from 'react';
 import {UserContext} from "./UserContext.jsx";
+import {ChatRoomsContext} from "./ChatRoomsContext.jsx";
+import {Link, useNavigate, useParams} from "react-router-dom";
 
 function DisplayChatMsg() {
-    const {roomName, roomId, setRoomName, setRoomId, user, setShowAllRooms} = useContext(UserContext);
+    const params = useParams(); // this will contain the room id
+    const {setUser, setRoomName, setRoomId, user, setShowAllRooms} = useContext(UserContext);
+    const {roomsHashTable} = useContext(ChatRoomsContext);
     const [msgList, setMsgList] = useState([]);
     const [userInput, setUserInput] = useState("");
     const [error, setError] = useState("");
+    const navigate = useNavigate();  // Get navigate function from useNavigate
 
     // helper fn to get all the chat msgs in this room
     async function getAllMsgs() {
-        const url = "api/room/" + roomId;
+        const url = `/api/room/${params.roomId}`;
         const response = await fetch(url);
-        //console.debug(msg);
         if (response.ok) {
             const msg = await response.json();
             setMsgList(msg);
             setError("");
         } else {
+            if (response.status === 401) {
+                setUser(null);
+                navigate('/');
+            }
             setError(await response.text());
         }
     }
 
     // helper fn to handle sending one msg to the current chat room
     async function sendOneMsg() {
-        const url = "api/room/" + roomId;
+        const url = `/api/room/${params.roomId}`;
         let body = {
             content: userInput,
             time: Date.now(), // ms since epoch
@@ -45,6 +53,10 @@ function DisplayChatMsg() {
             // call this fn again to let react know to rerender the chat list
             await getAllMsgs();
         } else {
+            if (response.status === 401) {
+                setUser(null);
+                navigate('/');
+            }
             setError(await response.text());
         }
     }
@@ -63,7 +75,7 @@ function DisplayChatMsg() {
     return (
         <>
             <section className="show-msgs">
-                <h1>Chat Room: {roomName}</h1>
+                <h1>Chat Room: {roomsHashTable.get(params.roomId)[0]}</h1>
                 <ul>
                     {
                         msgList.map(msg => (
@@ -80,11 +92,7 @@ function DisplayChatMsg() {
                 <button id="send-new-msg-bt" onClick={sendOneMsg}>send</button>
             </section>
             <section>
-                <button id="back-bt" onClick={() => {
-                    setRoomId("");
-                    setRoomName("");
-                    setShowAllRooms(true);
-                }}>Back</button>
+                <Link to={"/rooms"}>Back</Link>
             </section>
             <section className="error-message">{error}</section>
         </>

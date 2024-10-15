@@ -1,13 +1,15 @@
 import {useContext, useEffect, useState} from "react";
 import {UserContext} from "./UserContext.jsx";
+import {useNavigate} from "react-router-dom";
 
 function DisplayCurUser() {
-    const {user, setUser, setShowAllRooms, setRoomName, setRoomId} = useContext(UserContext);  // Access user and setUser
+    const {user, setUser} = useContext(UserContext);  // Access user and setUser
     const [errMsg, setErrMsg] = useState("");
+    const navigate = useNavigate();  // Get navigate function from useNavigate
 
     // fn to log off
     async function logOffFn() {
-        const url = "api/logoff/";
+        const url = "/api/logoff/";
         const data = {
             method: "POST",
         }
@@ -15,9 +17,7 @@ function DisplayCurUser() {
         if (response.ok) {
             setErrMsg("");
             setUser(null);
-            setShowAllRooms(true);
-            setRoomName("");
-            setRoomId("");
+            navigate("/");
         } else {
             setErrMsg("Error: 400 - log off failed!");
         }
