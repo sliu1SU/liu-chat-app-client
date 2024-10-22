@@ -2,6 +2,7 @@ import {useContext, useEffect, useState} from "react";
 import {UserContext} from "./UserContext.jsx";
 import {ChatRoomsContext} from "./ChatRoomsContext.jsx";
 import {Link, useNavigate} from "react-router-dom";
+import GetAllRooms from "./GetAllRooms.jsx";
 
 // component to display all chat rooms
 function DisplayRoomList() {
@@ -16,10 +17,12 @@ function DisplayRoomList() {
     const titleName = 'room name: ';
     const titleDesc = 'room description: ';
 
+    // put get all rooms in use context
     async function getAllRooms() {
         const url = "/api/rooms/";
         const response = await fetch(url);
         if (response.ok) {
+            setError("");
             const arr = await response.json();
             setRooms(arr);
             // update the hashtable
@@ -61,7 +64,7 @@ function DisplayRoomList() {
                 setUser(null);
                 navigate('/');
             }
-            setError("ERROR: professor screwed up! please try again.");
+            setError(await response.text());
         }
     }
 

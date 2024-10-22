@@ -2,11 +2,12 @@ import {useContext, useEffect, useState} from 'react';
 import {UserContext} from "./UserContext.jsx";
 import {ChatRoomsContext} from "./ChatRoomsContext.jsx";
 import {Link, useNavigate, useParams} from "react-router-dom";
+import GetAllRooms from "./GetAllRooms.jsx";
 
 function DisplayChatMsg() {
     const params = useParams(); // this will contain the room id
     const {setUser, setRoomName, setRoomId, user, setShowAllRooms} = useContext(UserContext);
-    const {roomsHashTable} = useContext(ChatRoomsContext);
+    const {roomsHashTable, setRoomsHashTable} = useContext(ChatRoomsContext);
     const [msgList, setMsgList] = useState([]);
     const [userInput, setUserInput] = useState("");
     const [error, setError] = useState("");
@@ -61,6 +62,19 @@ function DisplayChatMsg() {
         }
     }
 
+    async function rebuildRoomHash() {
+        console.log("rebuildRoomHash is called")
+        const arr = await GetAllRooms();
+        if (arr.size > 0) {
+            // update the hashtable
+            let table = new Map();
+            for (let i = 0; i < arr.length; i++) {
+                table.set(arr[i].id, [arr[i].name, arr[i].description]);
+            }
+            setRoomsHashTable(table);
+        }
+    }
+
     // call api once to fetch all existing msgs in this chat room at the beginning
     useEffect(() => {
         getAllMsgs();
@@ -72,31 +86,40 @@ function DisplayChatMsg() {
     }, []);
 
     // react to render a list of msgs in this chat room
-    return (
-        <>
-            <section className="show-msgs">
-                <h1>Chat Room: {roomsHashTable.get(params.roomId)[0]}</h1>
-                <ul>
-                    {
-                        msgList.map(msg => (
-                            <li key={msg.id}>
-                                {msg.sender} @ {new Date(msg.time).toLocaleString()}: {msg.content}
-                            </li>
-                        ))
-                    }
-                </ul>
-            </section>
-            <section className="new-chat-msg-input">
-                <input id="new-msg-input" type="text" value={userInput}
-                       onChange={event => setUserInput(event.target.value)} />
-                <button id="send-new-msg-bt" onClick={sendOneMsg}>send</button>
-            </section>
-            <section>
-                <Link to={"/rooms"}>Back</Link>
-            </section>
-            <section className="error-message">{error}</section>
-        </>
-    )
+    // do a get request to populate roomHashTable, make sure you check if cookie is available
+    if (roomsHashTable.size === 0) {
+        return (
+            <div>
+                Room Does Not Exist!
+            </div>
+        )
+    } else {
+        return (
+            <>
+                <section className="show-msgs">
+                    <h1>Chat Room: {roomsHashTable.get(params.roomId)[0]}</h1>
+                    <ul>
+                        {
+                            msgList.map(msg => (
+                                <li key={msg.id}>
+                                    {msg.sender} @ {new Date(msg.time).toLocaleString()}: {msg.content}
+                                </li>
+                            ))
+                        }
+                    </ul>
+                </section>
+                <section className="new-chat-msg-input">
+                    <input id="new-msg-input" type="text" value={userInput}
+                           onChange={event => setUserInput(event.target.value)} />
+                    <button id="send-new-msg-bt" onClick={sendOneMsg}>send</button>
+                </section>
+                <section>
+                    <Link to={"/rooms"}>Back</Link>
+                </section>
+                <section className="error-message">{error}</section>
+            </>
+        )
+    }
 }
 
 export default DisplayChatMsg;
