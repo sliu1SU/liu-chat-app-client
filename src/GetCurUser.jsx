@@ -1,6 +1,6 @@
 
 async function GetCurUser() {
-    console.log("GetCurUser is called")
+    //console.log("GetCurUser is called")
     const url = "/api/user";
     const response = await fetch(url);
     let user = null;
