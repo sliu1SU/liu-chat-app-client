@@ -68,7 +68,7 @@ function SignInAndUp() {
         const user = userCredential.user;
         if (user) {
             // Set the token in a cookie
-            Cookies.set('authToken', user.stsTokenManager.accessToken, {expires: 0.5/1440});
+            Cookies.set('authToken', user.stsTokenManager.accessToken, {expires: 30/1440});
             console.log('log in...user:',user)
             setUser(user);
             setErrMsg("");
@@ -83,7 +83,7 @@ function SignInAndUp() {
         const user = userCredential.user;
         if (user) {
             // Set the token in a cookie
-            Cookies.set('authToken', user.stsTokenManager.accessToken, {expires: 0.5/1440});
+            Cookies.set('authToken', user.stsTokenManager.accessToken, {expires: 30/1440});
             console.log('sign up...user:',user)
             setUser(user);
             setErrMsg("");
