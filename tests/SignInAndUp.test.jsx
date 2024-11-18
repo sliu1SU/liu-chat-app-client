@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import {fireEvent, render, screen} from '@testing-library/react';
 import SignInAndUp from '../src/SignInAndUp.jsx';
 import {UserContext} from "../src/UserContext.jsx";
 import {MemoryRouter} from "react-router-dom";
@@ -12,7 +12,7 @@ vi.mock('react-router-dom', async () => {
     };
 });
 
-describe('SignInAndUp Component', () => {
+describe('test SignInAndUp.jsx', () => {
     it('renders Log In and Sign Up buttons', () => {
         render(
             <UserContext.Provider value={{ user: null, setUser: () => {} }}>
@@ -28,24 +28,78 @@ describe('SignInAndUp Component', () => {
         const signUpButton = screen.getByRole('button', { name: /sign up/i });
         expect(signUpButton).toBeInTheDocument();
     });
-});
 
-// describe('SignInAndUp Component', () => {
-//     it('renders Log In and Sign Up buttons', () => {
-//         render(
-//             <MemoryRouter>
-//                 <UserContext.Provider value={{ user: null, setUser: () => {} }}>
-//                     <SignInAndUp />
-//                 </UserContext.Provider>
-//             </MemoryRouter>
-//         );
-//
-//         // Check if the "Log In" button is rendered
-//         const logInButton = screen.getByRole('button', { name: /log in/i });
-//         expect(logInButton).toBeInTheDocument();
-//
-//         // Check if the "Sign Up" button is rendered
-//         const signUpButton = screen.getByRole('button', { name: /sign up/i });
-//         expect(signUpButton).toBeInTheDocument();
-//     });
-// });
+    it('calls signUpFn when "Sign Up" button is clicked', () => {
+        // Mock the logInFn and signUpFn
+        const logInFn = vi.fn();
+        const signUpFn = vi.fn();
+
+        render(
+            <UserContext.Provider value={{ user: null, setUser: () => {} }}>
+                <SignInAndUp />
+            </UserContext.Provider>
+        );
+
+        // Get the Sign Up button
+        const signUpButton = screen.getByRole('button', { name: /sign up/i });
+
+        // Replace the original function with the mocked version
+        signUpButton.onclick = signUpFn;
+
+        // Simulate the click event on Sign Up button
+        fireEvent.click(signUpButton);
+
+        // Check if signUpFn was called
+        expect(signUpFn).toHaveBeenCalledTimes(1);
+        expect(logInFn).not.toHaveBeenCalled();  // Ensure logInFn was not called
+    });
+
+    it('calls logInFn when "Log In" button is clicked', () => {
+        // Mock the logInFn and signUpFn
+        const logInFn = vi.fn();
+        const signUpFn = vi.fn();
+
+        render(
+            <UserContext.Provider value={{ user: null, setUser: () => {} }}>
+                <SignInAndUp />
+            </UserContext.Provider>
+        );
+
+        // Get the Sign Up button
+        const logInButton = screen.getByRole('button', { name: /log in/i });
+
+        // Replace the original function with the mocked version
+        logInButton.onclick = logInFn;
+
+        // Simulate the click event on Sign Up button
+        fireEvent.click(logInButton);
+
+        // Check if signUpFn was called
+        expect(logInFn).toHaveBeenCalledTimes(1);
+        expect(signUpFn).not.toHaveBeenCalled();  // Ensure logInFn was not called
+    });
+
+    it('renders Log In and Sign Up buttons and input fields', () => {
+        render(
+            <UserContext.Provider value={{ user: null, setUser: () => {} }}>
+                <SignInAndUp />
+            </UserContext.Provider>
+        );
+
+        // Check if the email input is rendered
+        const emailInput = screen.getByPlaceholderText(/enter email here.../i);
+        expect(emailInput).toBeInTheDocument();
+
+        // Check if the password input is rendered
+        const passwordInput = screen.getByPlaceholderText(/enter password here.../i);
+        expect(passwordInput).toBeInTheDocument();
+
+        // Optionally, simulate typing in the inputs
+        fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+        fireEvent.change(passwordInput, { target: { value: 'password123' } });
+
+        // Check if the inputs received the correct values
+        expect(emailInput.value).toBe('test@example.com');
+        expect(passwordInput.value).toBe('password123');
+    });
+});

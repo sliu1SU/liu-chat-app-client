@@ -10,6 +10,9 @@ export default defineConfig({
     // hey! 👋 over here
     globals: true,
     setupFiles: './tests/setup.js', // assuming the test folder is in the root of our project
+    coverage: {
+      provider: 'v8' // or 'v8'
+    },
   },
   server: {
     proxy: {
