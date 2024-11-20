@@ -4,37 +4,23 @@ import {useNavigate} from "react-router-dom";
 import {firebaseAuth, signOut} from "./FirebaseAuth.jsx";
 import Cookies from "js-cookie";
 
-function DisplayCurUser() {
-    const {user, setUser, isLoading} = useContext(UserContext);  // Access user and setUser
+function DisplayCurUser({logOffFn}) {
+    const {user, setUser} = useContext(UserContext);  // Access user and setUser
     const [errMsg, setErrMsg] = useState("");
     const navigate = useNavigate();  // Get navigate function from useNavigate
 
-    // // fn to log off
-    // async function logOffFn() {
-    //     const url = "/api/logoff/";
-    //     const data = {
-    //         method: "POST",
-    //     }
-    //     const response = await fetch(url, data);
-    //     if (response.ok) {
-    //         setErrMsg("");
-    //         setUser(null);
-    //         navigate("/");
-    //     } else {
-    //         setErrMsg("Error: 400 - log off failed!");
-    //     }
-    // }
-
-    async function logOffFn() {
-        try {
-            await signOut(firebaseAuth);
-            // Clear the auth_token cookie
-            Cookies.remove('authToken', { path: '/' });
-            setUser(null);
-            setErrMsg("");
-            navigate('/');
-        } catch (e) {
-            setErrMsg(e);
+    if (!logOffFn) {
+        logOffFn = async function logOffFn() {
+            try {
+                await signOut(firebaseAuth);
+                // Clear the auth_token cookie
+                Cookies.remove('authToken', { path: '/' });
+                setUser(null);
+                setErrMsg("");
+                navigate('/');
+            } catch (e) {
+                setErrMsg(e);
+            }
         }
     }
 
