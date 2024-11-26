@@ -31,52 +31,46 @@ describe('test SignInAndUp.jsx', () => {
 
     it('calls signUpFn when "Sign Up" button is clicked', () => {
         // Mock the logInFn and signUpFn
-        const logInFn = vi.fn();
-        const signUpFn = vi.fn();
+        const mockSignupFn = vi.fn();
+        const mockLoginFn = vi.fn();
 
         render(
             <UserContext.Provider value={{ user: null, setUser: () => {} }}>
-                <SignInAndUp />
+                <SignInAndUp signUpFn={mockSignupFn} logInFn={mockLoginFn}/>
             </UserContext.Provider>
         );
 
         // Get the Sign Up button
         const signUpButton = screen.getByRole('button', { name: /sign up/i });
 
-        // Replace the original function with the mocked version
-        signUpButton.onclick = signUpFn;
-
         // Simulate the click event on Sign Up button
         fireEvent.click(signUpButton);
 
         // Check if signUpFn was called
-        expect(signUpFn).toHaveBeenCalledTimes(1);
-        expect(logInFn).not.toHaveBeenCalled();  // Ensure logInFn was not called
+        expect(mockSignupFn).toHaveBeenCalledTimes(1);
+        expect(mockLoginFn).not.toHaveBeenCalled();  // Ensure logInFn was not called
     });
 
     it('calls logInFn when "Log In" button is clicked', () => {
         // Mock the logInFn and signUpFn
-        const logInFn = vi.fn();
-        const signUpFn = vi.fn();
+        const mockSignupFn = vi.fn();
+        const mockLoginFn = vi.fn();
 
         render(
             <UserContext.Provider value={{ user: null, setUser: () => {} }}>
-                <SignInAndUp />
+                <SignInAndUp signUpFn={mockSignupFn} logInFn={mockLoginFn}/>
             </UserContext.Provider>
         );
 
         // Get the Sign Up button
         const logInButton = screen.getByRole('button', { name: /log in/i });
 
-        // Replace the original function with the mocked version
-        logInButton.onclick = logInFn;
-
         // Simulate the click event on Sign Up button
         fireEvent.click(logInButton);
 
         // Check if signUpFn was called
-        expect(logInFn).toHaveBeenCalledTimes(1);
-        expect(signUpFn).not.toHaveBeenCalled();  // Ensure logInFn was not called
+        expect(mockLoginFn).toHaveBeenCalledTimes(1);
+        expect(mockSignupFn).not.toHaveBeenCalled();  // Ensure logInFn was not called
     });
 
     it('renders Log In and Sign Up buttons and input fields', () => {

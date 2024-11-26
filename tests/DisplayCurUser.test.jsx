@@ -33,12 +33,12 @@ describe('test DisplayCurUser.jsx', () => {
 
     it('calls logOffFn when "Log Off" button is clicked and user != null', () => {
         // Mock the logInFn and signUpFn
-        const logOffFn = vi.fn();
+        const mockFn = vi.fn();
 
         // Render the component with a mocked UserContext and a non-null user object
         render(
             <UserContext.Provider value={{user: { id: "xx", email: "xx"}, setUser: vi.fn()}}>
-                <DisplayCurUser />
+                <DisplayCurUser logOffFn={mockFn}/>
             </UserContext.Provider>
         );
 
@@ -46,14 +46,11 @@ describe('test DisplayCurUser.jsx', () => {
         const logOffButton = screen.getByRole('button', { name: /log off/i });
         expect(logOffButton).toBeInTheDocument();
 
-        // Replace the original function with the mocked version
-        logOffButton.onclick = logOffFn;
-
         // Simulate the click event on Sign Up button
         fireEvent.click(logOffButton);
 
         // Check if signUpFn was called
-        expect(logOffFn).toHaveBeenCalledTimes(1);
+        expect(mockFn).toHaveBeenCalledTimes(1);
     });
 
     it('user id and email are displayed when user != null', () => {
