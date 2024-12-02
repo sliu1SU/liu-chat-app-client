@@ -27,12 +27,15 @@ describe('Test DisplayRoomList.jsx', () => {
         cy.get('ul li').first().invoke('text').then((text) => {
             // Extract room.id from the text (assumes the format "{room.id} - {room.name} - {room.description}")
             const roomId = text.split(' - ')[0].trim();
+            const roomName = text.split(' - ')[1].trim();
 
             // Click the first link in the <li> element
             cy.get('ul li').first().find('a').click();
 
             // Verify the URL contains the room id
             cy.url().should('include', `/${roomId}`);
+            cy.contains(`Chat Room: ${roomName}`);
+
         });
 
     });

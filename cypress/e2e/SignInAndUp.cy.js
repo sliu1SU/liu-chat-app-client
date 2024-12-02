@@ -30,7 +30,7 @@ describe('Test SignInAndUp.jsx', () => {
   it('page should display email textbox and password textbox', () => {
     cy.visit('http://localhost:5173/');
     cy.get('#email-input').should('exist').and('have.attr', 'placeholder', 'Enter email here...');
-    cy.get('#password-input').should('exist').and('have.attr', 'placeholder', 'Enter password here...');;
+    cy.get('#password-input').should('exist').and('have.attr', 'placeholder', 'Enter password here...');
   });
 
   it('user should log in with the right email/password combo', () => {
@@ -40,7 +40,7 @@ describe('Test SignInAndUp.jsx', () => {
       cy.get('#password-input').type(loginTestPassword);
       cy.get('#submit-login-bt').click();
       cy.url().should('eq', 'http://localhost:5173/rooms');
-      cy.contains('test1@gmail.com');
+      cy.contains(loginTestEmail);
     }
   });
 
